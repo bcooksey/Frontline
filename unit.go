@@ -3,7 +3,7 @@ package main
 type Unit struct {
     movementRange int
     attackRating int
-    defenseRating int 
+    defenseRating int
     supplyCost int
 }
 
