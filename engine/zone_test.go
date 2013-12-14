@@ -3,7 +3,7 @@ package engine
 import "testing"
 
 func TestZoneGetter(t *testing.T) {
-    zone := Zone{supplyValue:  2}
+    zone := Zone{supplyValue: 2}
 
     if zone.SupplyValue() != 2 {
         t.Error("Zone getter broken")

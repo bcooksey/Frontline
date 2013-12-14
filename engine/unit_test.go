@@ -3,7 +3,7 @@ package engine
 import "testing"
 
 func TestUnitAttack(t *testing.T) {
-    u := Unit{attackRating:  2}
+    u := Unit{attackRating: 2}
 
     if u.Attack(3) != false {
         t.Error("Unit attacked with a die roll higher than its rating")

@@ -2,9 +2,9 @@ package engine
 
 type Unit struct {
     movementRange int
-    attackRating int
+    attackRating  int
     defenseRating int
-    supplyCost int
+    supplyCost    int
 }
 
 func (u *Unit) Attack(roll int) bool {
