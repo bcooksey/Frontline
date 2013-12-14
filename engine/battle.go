@@ -21,6 +21,20 @@ package engine
   3: The defender kills all the attackers units - Battle is over
 */
 
+type Roller interface {
+    Roll() int
+}
+
+type Attacker interface {
+    Attack(int) bool
+    Category() string
+}
+
+type Defender interface {
+    Defend(int) bool
+    Category() string
+}
+
 /*
    b = new battle
    b.rollForAttackers()
@@ -31,14 +45,33 @@ package engine
 */
 
 type Battle struct {
-    attackers []Unit
-    defenders []Unit
+    attackers []Attacker
+    defenders []Defender
     phase     string
+    dice      Roller
 }
 
-func CreateBattle(attackers []Unit, defenders []Unit) Battle {
-    return Battle{attackers: attackers, defenders: defenders, phase: "attack"}
+func CreateBattle(attackers []Attacker, defenders []Defender, dice Roller) Battle {
+    if dice == nil {
+        dice = &Dice{sides: 6}
+    }
+    return Battle{
+        attackers: attackers,
+        defenders: defenders,
+        phase:     "attack",
+        dice:      dice,
+    }
 }
 
 // Getters
 func (b *Battle) Phase() string { return b.phase }
+
+func (b *Battle) RollForAttackers() map[string]int {
+    hits := map[string]int{"land": 0, "sea": 0, "air": 0}
+    for _, attacker := range b.attackers {
+        if attacker.Attack(b.dice.Roll()) {
+            hits[attacker.Category()] += 1
+        }
+    }
+    return hits
+}

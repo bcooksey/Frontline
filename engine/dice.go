@@ -1,8 +1,8 @@
 package engine
 
 import (
-    "time"
     "math/rand"
+    "time"
 )
 
 type Dice struct {
