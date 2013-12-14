@@ -1,4 +1,4 @@
-package main
+package engine
 
 type Unit struct {
     movementRange int
@@ -7,10 +7,10 @@ type Unit struct {
     supplyCost int
 }
 
-func (u *Unit) attack(roll int) bool {
+func (u *Unit) Attack(roll int) bool {
     return roll <= u.attackRating
 }
 
-func (u *Unit) defend(roll int) bool {
+func (u *Unit) Defend(roll int) bool {
     return roll <= u.defenseRating
 }
