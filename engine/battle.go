@@ -75,3 +75,13 @@ func (b *Battle) RollForAttackers() map[string]int {
     }
     return hits
 }
+
+func (b *Battle) RollForDefenders() map[string]int {
+    hits := map[string]int{"land": 0, "sea": 0, "air": 0}
+    for _, defender := range b.defenders {
+        if defender.Defend(b.dice.Roll()) {
+            hits[defender.Category()] += 1
+        }
+    }
+    return hits
+}
