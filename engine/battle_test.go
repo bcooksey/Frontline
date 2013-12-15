@@ -6,6 +6,8 @@ type Mock struct{}
 
 func (m *Mock) Attack(int) bool  { return true }
 func (m *Mock) Defend(int) bool  { return true }
+func (m *Mock) Wound() bool      { return true }
+func (m *Mock) Wounded() bool    { return false }
 func (m *Mock) Category() string { return "land" }
 
 func TestCreateBattle(t *testing.T) {
@@ -51,5 +53,40 @@ func TestBattleDefending(t *testing.T) {
     }
     if count != 2 {
         t.Error("Hit count returned an invalid value")
+    }
+}
+
+func TestBattleWoundDefenders(t *testing.T) {
+    defenders := make([]Defender, 2)
+    defenders[0] = &Unit{category: "land"}
+    defenders[1] = &Unit{category: "land"}
+
+    battle := CreateBattle(nil, defenders, nil)
+
+    casualties := map[string]int{}
+    casualties["land"] = 2
+    battle.WoundDefenders(casualties)
+
+    if battle.Defenders()[0].Wounded() != true {
+        t.Error("Some Defenders were not wounded that should have been")
+    }
+
+    defenders = make([]Defender, 2)
+    defenders[0] = &Unit{category: "land"}
+    defenders[1] = &Unit{category: "land"}
+
+    battle = CreateBattle(nil, defenders, nil)
+    casualties["land"] = 1
+    battle.WoundDefenders(casualties)
+
+    if battle.Defenders()[1].Wounded() != false {
+        t.Errorf("Wounding defenders did not mark correct units as wounded.")
+    }
+
+    casualties["land"] = 100000
+    _, err := battle.WoundDefenders(casualties)
+
+    if err == nil {
+        t.Errorf("Wounding more defenders than there are participating in the battle does not throw an error")
     }
 }

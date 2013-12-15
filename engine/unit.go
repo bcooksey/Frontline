@@ -6,6 +6,7 @@ type Unit struct {
     defenseRating int
     supplyCost    int
     category      string
+    wounded       bool
 }
 
 func (u *Unit) Attack(roll int) bool {
@@ -17,3 +18,10 @@ func (u *Unit) Defend(roll int) bool {
 }
 
 func (u *Unit) Category() string { return u.category }
+
+func (u *Unit) Wound() bool {
+    u.wounded = true
+    return true
+}
+
+func (u *Unit) Wounded() bool { return u.wounded }

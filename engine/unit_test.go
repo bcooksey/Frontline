@@ -17,3 +17,17 @@ func TestUnitAttack(t *testing.T) {
         t.Error("Unit did not attack with a die roll lower to its rating")
     }
 }
+
+func TestWoundUnit(t *testing.T) {
+    u := Unit{}
+
+    if u.Wounded() {
+        t.Error("Unit does defaults to being wounded")
+    }
+
+    u.Wound()
+
+    if !u.Wounded() {
+        t.Error("Wounding Unit has no effect")
+    }
+}
