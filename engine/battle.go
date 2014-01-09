@@ -32,18 +32,20 @@ type Roller interface {
     Roll() int
 }
 
-type Attacker interface {
-    Attack(int) bool
+type Soldier interface {
     Wound() bool
     Wounded() bool
     Category() string
 }
 
+type Attacker interface {
+    Attack(int) bool
+    Soldier
+}
+
 type Defender interface {
     Defend(int) bool
-    Wound() bool
-    Wounded() bool
-    Category() string
+    Soldier
 }
 
 type Battle struct {
@@ -90,25 +92,32 @@ func (b *Battle) RollForDefenders() map[string]int {
     return hits
 }
 
-func (b *Battle) WoundDefenders(casualties map[string]int) (bool, error) {
-
-    // After the sort, map contains pointers to battle's defenders
-    sorted_defenders := map[string][]Defender{}
-    for _, defender := range b.defenders {
-        sorted_defenders[defender.Category()] = append(sorted_defenders[defender.Category()], defender)
+func (b *Battle) woundSoldiers(units []Soldier, casualties map[string]int) (bool, error) {
+    // After the sort, map contains pointers to battle's units
+    sorted_units := map[string][]Soldier{}
+    for _, unit := range units {
+        sorted_units[unit.Category()] = append(sorted_units[unit.Category()], unit)
     }
 
     for category, count := range casualties {
-        if count > len(sorted_defenders[category]) {
+        if count > len(sorted_units[category]) {
             return false, IllegalOperationError{
-                message: fmt.Sprintf("Removing %d %s units failed. Only %d available.", count, category, len(sorted_defenders[category])),
+                message: fmt.Sprintf("Removing %d %s units failed. Only %d available.", count, category, len(sorted_units[category])),
             }
         }
         for i := 0; i < count; i++ {
-            sorted_defenders[category][i].Wound()
+            sorted_units[category][i].Wound()
         }
     }
     return true, nil
+}
+
+func (b *Battle) WoundDefenders(casualties map[string]int) (bool, error) {
+    var units []Soldier
+    for _, defender := range b.defenders {
+        units = append(units, defender)
+    }
+    return b.woundSoldiers(units, casualties)
 }
 
 func (b *Battle) WoundAttackers(attackers []Attacker) bool {
