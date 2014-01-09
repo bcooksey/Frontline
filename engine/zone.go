@@ -8,7 +8,7 @@ var _ = fmt.Println
 type Zone struct {
     id               int
     occupyingUnits   []Unit
-    neighboringZones []Zone
+    neighboringZones []*Zone
     supplyValue      int
     terrainType      string
     nativePower      string
@@ -16,12 +16,12 @@ type Zone struct {
 }
 
 // Getters
-func (z *Zone) SupplyValue() int         { return z.supplyValue }
-func (z *Zone) OccupyingUnits() []Unit   { return z.occupyingUnits }
-func (z *Zone) NeighboringZones() []Zone { return z.neighboringZones }
-func (z *Zone) TerrainType() string      { return z.terrainType }
-func (z *Zone) NativePower() string      { return z.nativePower }
-func (z *Zone) ControllingPower() string { return z.controllingPower }
+func (z *Zone) SupplyValue() int          { return z.supplyValue }
+func (z *Zone) OccupyingUnits() []Unit    { return z.occupyingUnits }
+func (z *Zone) NeighboringZones() []*Zone { return z.neighboringZones }
+func (z *Zone) TerrainType() string       { return z.terrainType }
+func (z *Zone) NativePower() string       { return z.nativePower }
+func (z *Zone) ControllingPower() string  { return z.controllingPower }
 
 func (z *Zone) AddOccupyingUnit(newUnit Unit) bool {
     z.occupyingUnits = append(z.occupyingUnits, newUnit)
@@ -71,7 +71,7 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
                     return true
                 } else {
                     visits[neighbor.id] = true
-                    queue.Push(neighbor)
+                    queue.Push(*neighbor)
                 }
             }
         }

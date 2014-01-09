@@ -26,10 +26,11 @@ func TestAddUnitToZone(t *testing.T) {
 
 func TestMoveUnit(t *testing.T) {
     zone1 := Zone{id: 1}
-    zone2 := Zone{id: 2, neighboringZones: []Zone{zone1}}
-    zone4 := Zone{id: 4}
-    zone3 := Zone{id: 3, neighboringZones: []Zone{zone1, zone4}}
-    zone1.neighboringZones = []Zone{zone2, zone3}
+    zone2 := Zone{id: 2, neighboringZones: []*Zone{&zone1}}
+    zone3 := Zone{id: 3}
+    zone4 := Zone{id: 4, neighboringZones: []*Zone{&zone3}}
+    zone1.neighboringZones = []*Zone{&zone2, &zone3}
+    zone3.neighboringZones = []*Zone{&zone1, &zone4}
 
     for _, z := range zone1.neighboringZones[1].neighboringZones {
         fmt.Println(z.id)
