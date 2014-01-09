@@ -125,3 +125,24 @@ func TestBattleWoundAttackers(t *testing.T) {
         t.Errorf("Wounding more attackers than there are participating in the battle does not throw an error")
     }
 }
+
+func TestBattleRemoveCasualties(t *testing.T){
+    attackers := make([]Attacker, 2)
+    attackers[0] = &Unit{category: "land", wounded: true}
+    attackers[1] = &Unit{category: "land"}
+
+    defenders := make([]Defender, 1)
+    defenders[0] = &Unit{category: "land", wounded: true}
+
+    battle := CreateBattle(attackers, defenders, nil)
+
+    battle.RemoveCasualties()
+
+    if len(battle.Attackers()) != 1 {
+        t.Error("Wrong number of ataccker casualties were removed from the battle")
+    }
+
+    if len(battle.Defenders()) != 0 {
+        t.Error("Wrong number of defending casualties were removed from the battle")
+    }
+}

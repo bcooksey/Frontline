@@ -11,16 +11,17 @@ import "fmt"
       * Attacker must select who will die
       * Units die!
     2. Attacking units fire
-    3. Defending units fire
-    4. Remove defender’s casualties
       * Defender must select who will die
+    3. Defending units fire
       * Attacker must select who will die
+    4. Remove casualties
       * Units die!
-* After the final phase, one of four things happens:
+* After the final phase, one of five things happens:
   1: The attacker decides to attack again - A new round begins
-  1: The attacker kills all the defending units - Results in capturing Zone. Battle is over
-  2: The attacker withdrawls - Must relocate units back to a friendly Zone. Battle is over
-  3: The defender kills all the attackers units - Battle is over
+  2: The attacker kills all the defending units - Results in capturing Zone. Battle is over
+  3: The attacker withdrawls - Must relocate units back to a friendly Zone. Battle is over
+  4: The defender kills all the attackers units - Battle is over
+  5: Both sides lose all units. Battle is over
 */
 
 /* Rules currently being ignored:
@@ -129,6 +130,22 @@ func (b *Battle) WoundAttackers(casualties map[string]int) (bool, error) {
 }
 
 func (b *Battle) RemoveCasualties() bool {
+    var newAttackers []Attacker
+
+    for _, attacker := range b.attackers {
+        if !attacker.Wounded() {
+            newAttackers = append(newAttackers, attacker)
+        }
+    }
+    b.attackers = newAttackers
+
+    var newDefenders []Defender
+    for _, defender := range b.defenders {
+        if !defender.Wounded() {
+            newDefenders = append(newDefenders, defender)
+        }
+    }
+    b.defenders = newDefenders
     return true
 }
 
