@@ -120,9 +120,12 @@ func (b *Battle) WoundDefenders(casualties map[string]int) (bool, error) {
     return b.woundSoldiers(units, casualties)
 }
 
-func (b *Battle) WoundAttackers(attackers []Attacker) bool {
-
-    return true
+func (b *Battle) WoundAttackers(casualties map[string]int) (bool, error) {
+    var units []Soldier
+    for _, attacker := range b.attackers {
+        units = append(units, attacker)
+    }
+    return b.woundSoldiers(units, casualties)
 }
 
 func (b *Battle) RemoveCasualties() bool {

@@ -90,3 +90,38 @@ func TestBattleWoundDefenders(t *testing.T) {
         t.Errorf("Wounding more defenders than there are participating in the battle does not throw an error")
     }
 }
+
+func TestBattleWoundAttackers(t *testing.T) {
+    attackers := make([]Attacker, 2)
+    attackers[0] = &Unit{category: "land"}
+    attackers[1] = &Unit{category: "land"}
+
+    battle := CreateBattle(attackers, nil, nil)
+
+    casualties := map[string]int{}
+    casualties["land"] = 2
+    battle.WoundAttackers(casualties)
+
+    if battle.Attackers()[0].Wounded() != true {
+        t.Error("Some Attackers were not wounded that should have been")
+    }
+
+    attackers = make([]Attacker, 2)
+    attackers[0] = &Unit{category: "land"}
+    attackers[1] = &Unit{category: "land"}
+
+    battle = CreateBattle(attackers, nil, nil)
+    casualties["land"] = 1
+    battle.WoundAttackers(casualties)
+
+    if battle.Attackers()[1].Wounded() != false {
+        t.Errorf("Wounding attackers did not mark correct units as wounded.")
+    }
+
+    casualties["land"] = 100000
+    _, err := battle.WoundAttackers(casualties)
+
+    if err == nil {
+        t.Errorf("Wounding more attackers than there are participating in the battle does not throw an error")
+    }
+}
