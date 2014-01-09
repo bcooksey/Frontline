@@ -126,7 +126,7 @@ func TestBattleWoundAttackers(t *testing.T) {
     }
 }
 
-func TestBattleRemoveCasualties(t *testing.T){
+func TestBattleRemoveCasualties(t *testing.T) {
     attackers := make([]Attacker, 2)
     attackers[0] = &Unit{category: "land", wounded: true}
     attackers[1] = &Unit{category: "land"}

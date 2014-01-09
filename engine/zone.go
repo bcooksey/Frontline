@@ -2,10 +2,11 @@ package engine
 
 import "container/heap"
 import "fmt"
+
 var _ = fmt.Println
 
 type Zone struct {
-    id   int
+    id               int
     occupyingUnits   []Unit
     neighboringZones []Zone
     supplyValue      int
@@ -34,15 +35,15 @@ func (q ZoneQueue) Less(i, j int) bool { panic("Do not run less") }
 func (q ZoneQueue) Swap(i, j int)      { q[i], q[j] = q[j], q[i] }
 
 func (q *ZoneQueue) Push(z interface{}) {
-	*q = append(*q, z.(Zone))
+    *q = append(*q, z.(Zone))
 }
 
 func (q *ZoneQueue) Pop() interface{} {
-	old := *q
-	n := len(old)
-	z := old[n-1]
-	*q = old[0 : n-1]
-	return z
+    old := *q
+    n := len(old)
+    z := old[n-1]
+    *q = old[0 : n-1]
+    return z
 }
 
 func Move(fromZone Zone, toZone Zone, unit Unit) bool {

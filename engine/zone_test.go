@@ -2,6 +2,7 @@ package engine
 
 import "testing"
 import "fmt"
+
 var _ = fmt.Println
 
 func TestZoneGetter(t *testing.T) {
@@ -24,8 +25,8 @@ func TestAddUnitToZone(t *testing.T) {
 }
 
 func TestMoveUnit(t *testing.T) {
-    zone1 := Zone{id:1}
-    zone2 := Zone{id:2, neighboringZones: []Zone{zone1}}
+    zone1 := Zone{id: 1}
+    zone2 := Zone{id: 2, neighboringZones: []Zone{zone1}}
     zone4 := Zone{id: 4}
     zone3 := Zone{id: 3, neighboringZones: []Zone{zone1, zone4}}
     zone1.neighboringZones = []Zone{zone2, zone3}
