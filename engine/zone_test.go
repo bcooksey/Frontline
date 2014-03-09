@@ -81,3 +81,22 @@ func TestMoveLandUnitOnlyGoesOverLand(t *testing.T) {
         t.Error("Land unit moved across impassible area")
     }
 }
+
+func TestMoveSeaUnit(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "sea"}
+    zone2 := Zone{id: 2, terrainType: "sea"}
+    zone3 := Zone{id: 3, terrainType: "sea", neighboringZones: []*Zone{&zone2}}
+    zone1.neighboringZones = []*Zone{&zone2}
+    zone2.neighboringZones = []*Zone{&zone1, &zone3}
+
+    unit := Unit{movementRange: 20, category: "sea"}
+
+    if Move(zone1, zone3, unit) != true {
+        t.Error("Could not successfully move a sea unit from one zone to another")
+    }
+
+    zone2.terrainType = "land"
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Sea unit moved across land")
+    }
+}

@@ -89,6 +89,8 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
 func isTerrainValidForUnit(terrainType string, unitCategory string) bool {
     if unitCategory == "land" && terrainType == "land" {
         return true
+    } else if unitCategory == "sea" && terrainType == "sea" {
+        return true
     } else {
         return false
     }
