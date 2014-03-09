@@ -25,3 +25,5 @@ func (u *Unit) Wound() bool {
 }
 
 func (u *Unit) Wounded() bool { return u.wounded }
+
+func (u *Unit) MovementRange() int { return u.movementRange }

@@ -3,7 +3,7 @@ package engine
 import "testing"
 import "fmt"
 
-var _ = fmt.Println
+var _ = fmt.Println // TODO: Delete
 
 func TestZoneGetter(t *testing.T) {
     zone := Zone{supplyValue: 2}
@@ -24,19 +24,15 @@ func TestAddUnitToZone(t *testing.T) {
     }
 }
 
-func TestMoveUnit(t *testing.T) {
-    zone1 := Zone{id: 1}
-    zone2 := Zone{id: 2, neighboringZones: []*Zone{&zone1}}
-    zone3 := Zone{id: 3}
-    zone4 := Zone{id: 4, neighboringZones: []*Zone{&zone3}}
+func TestMove(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land"}
+    zone2 := Zone{id: 2, terrainType: "land", neighboringZones: []*Zone{&zone1}}
+    zone3 := Zone{id: 3, terrainType: "land"}
+    zone4 := Zone{id: 4, terrainType: "land", neighboringZones: []*Zone{&zone3}}
     zone1.neighboringZones = []*Zone{&zone2, &zone3}
     zone3.neighboringZones = []*Zone{&zone1, &zone4}
 
-    for _, z := range zone1.neighboringZones[1].neighboringZones {
-        fmt.Println(z.id)
-    }
-
-    unit := Unit{movementRange: 3}
+    unit := Unit{movementRange: 3, category: "land"}
 
     if Move(zone1, zone1, unit) != true {
         t.Error("Did not claim keeping a unit in same zone is valid")
@@ -47,11 +43,41 @@ func TestMoveUnit(t *testing.T) {
     }
 
     /* Cases to test:
-     *   Zone is beyond the units movement capability
-     *   One path is beyond units movement, another is ok
-     *   Land unit trying to go through sea
-     *   Land unit having to go through impassible area
      *   Sea units
      *   Air units
      */
+}
+
+func TestMoveZoneBeyondUnitMovementRange(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land"}
+    zone2 := Zone{id: 2, terrainType: "land", neighboringZones: []*Zone{&zone1}}
+    zone3 := Zone{id: 3, terrainType: "land"}
+    zone4 := Zone{id: 4, terrainType: "land", neighboringZones: []*Zone{&zone3}}
+    zone1.neighboringZones = []*Zone{&zone2, &zone3}
+    zone3.neighboringZones = []*Zone{&zone1, &zone4}
+
+    unit := Unit{movementRange: 1, category: "land"}
+
+    if Move(zone1, zone4, unit) != false {
+        t.Error("Unit moved beyond its movement range")
+    }
+}
+
+func TestMoveLandUnitOnlyGoesOverLand(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land"}
+    zone2 := Zone{id: 2, terrainType: "sea"}
+    zone3 := Zone{id: 3, terrainType: "land", neighboringZones: []*Zone{&zone2}}
+    zone1.neighboringZones = []*Zone{&zone2}
+    zone2.neighboringZones = []*Zone{&zone1, &zone3}
+
+    unit := Unit{movementRange: 20, category: "land"}
+
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Land unit moved across sea")
+    }
+
+    zone2.terrainType = "impassible"
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Land unit moved across impassible area")
+    }
 }

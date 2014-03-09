@@ -3,7 +3,7 @@ package engine
 import "container/heap"
 import "fmt"
 
-var _ = fmt.Println
+var _ = fmt.Println // TOOD: DELETE
 
 type Zone struct {
     id               int
@@ -59,14 +59,20 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
     visits[fromZone.id] = true
     queue.Push(fromZone)
 
+    movesLeft := unit.MovementRange()
+
     // Do a breadth-first search to see if the zones connect
     for queue.Len() > 0 {
-        fmt.Println("************\n")
+        if movesLeft <= 0 {
+            return false
+        }
         currentZone := queue.Pop().(Zone)
-        fmt.Printf("Looking at %d\n", currentZone.id)
         for _, neighbor := range currentZone.NeighboringZones() {
-            fmt.Printf("  - Neighbor %d\n", neighbor.id)
             if !visits[neighbor.id] {
+                if !isTerrainValidForUnit(currentZone.terrainType, unit.Category()) {
+                    continue
+                }
+
                 if neighbor.id == toZone.id {
                     return true
                 } else {
@@ -75,6 +81,15 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
                 }
             }
         }
+        movesLeft--
     }
     return false
+}
+
+func isTerrainValidForUnit(terrainType string, unitCategory string) bool {
+    if unitCategory == "land" && terrainType == "land" {
+        return true
+    } else {
+        return false
+    }
 }
