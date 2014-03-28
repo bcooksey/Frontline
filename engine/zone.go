@@ -91,6 +91,8 @@ func isTerrainValidForUnit(terrainType string, unitCategory string) bool {
         return true
     } else if unitCategory == "sea" && terrainType == "sea" {
         return true
+    } else if unitCategory == "air" && terrainType != "impassible" {
+        return true
     } else {
         return false
     }

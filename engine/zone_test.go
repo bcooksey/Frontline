@@ -41,11 +41,6 @@ func TestMove(t *testing.T) {
     if Move(zone1, zone4, unit) != true {
         t.Error("Could not successfully move a unit from one zone to another")
     }
-
-    /* Cases to test:
-     *   Sea units
-     *   Air units
-     */
 }
 
 func TestMoveZoneBeyondUnitMovementRange(t *testing.T) {
@@ -98,5 +93,48 @@ func TestMoveSeaUnit(t *testing.T) {
     zone2.terrainType = "land"
     if Move(zone1, zone3, unit) != false {
         t.Error("Sea unit moved across land")
+    }
+}
+
+func TestMoveAirUnit(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land"}
+    zone2 := Zone{id: 2, terrainType: "land"}
+    zone3 := Zone{id: 3, terrainType: "land", neighboringZones: []*Zone{&zone2}}
+    zone1.neighboringZones = []*Zone{&zone2}
+    zone2.neighboringZones = []*Zone{&zone1, &zone3}
+
+    unit := Unit{movementRange: 20, category: "air"}
+
+    if Move(zone1, zone3, unit) != true {
+        t.Error("Could not successfully move an air unit from one zone to another")
+    }
+
+    zone2.terrainType = "sea"
+    if Move(zone1, zone3, unit) != true {
+        t.Error("Air unit could not move across sea")
+    }
+}
+
+func TestMoveImpassibleLandIsImpassible(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land"}
+    zone2 := Zone{id: 2, terrainType: "impassible"}
+    zone3 := Zone{id: 3, terrainType: "land", neighboringZones: []*Zone{&zone2}}
+    zone1.neighboringZones = []*Zone{&zone2}
+    zone2.neighboringZones = []*Zone{&zone1, &zone3}
+
+    unit := Unit{movementRange: 20, category: "land"}
+
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Land united moved across impassible terrain")
+    }
+
+    unit.category = "sea"
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Sea unit moved across impassible terrain")
+    }
+
+    unit.category = "air"
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Air unit moved across impassible terrain")
     }
 }
