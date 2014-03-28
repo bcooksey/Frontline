@@ -80,7 +80,11 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
                 }
 
                 if neighbor.id == toZone.id {
-                    return true
+                    if canUnitStopInZone(unit, neighbor) {
+                        return true
+                    } else {
+                        return false
+                    }
                 } else {
                     visits[neighbor.id] = true
                     queue.Push(*neighbor)
@@ -102,4 +106,15 @@ func isTerrainValidForUnit(terrainType string, unitCategory string) bool {
     } else {
         return false
     }
+}
+
+func canUnitStopInZone(u Unit, z *Zone) bool {
+    if u.Category() == "air" {
+        if z.terrainType == "sea" {
+            return false
+        } else {
+            return true
+        }
+    }
+    return true
 }

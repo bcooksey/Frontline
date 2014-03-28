@@ -122,7 +122,9 @@ func TestMoveAirUnitGoesOverAnything(t *testing.T) {
         t.Error("Air unit could not move across sea")
     }
 
-    // Case: Air unit cannot stop in sea
+    if Move(zone1, zone2, unit) != false {
+        t.Error("Air unit stopped in the sea")
+    }
 }
 
 func TestMoveImpassibleLandIsImpassible(t *testing.T) {
