@@ -1,6 +1,8 @@
 package engine
 
-import "container/heap"
+import (
+    "container/heap"
+)
 import "fmt"
 
 var _ = fmt.Println // TOOD: DELETE
@@ -26,6 +28,10 @@ func (z *Zone) ControllingPower() string  { return z.controllingPower }
 func (z *Zone) AddOccupyingUnit(newUnit Unit) bool {
     z.occupyingUnits = append(z.occupyingUnits, newUnit)
     return true
+}
+
+func (z *Zone) Side() string {
+    return SidesMap[z.controllingPower]
 }
 
 type ZoneQueue []Zone
@@ -69,7 +75,7 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
         currentZone := queue.Pop().(Zone)
         for _, neighbor := range currentZone.NeighboringZones() {
             if !visits[neighbor.id] {
-                if !isTerrainValidForUnit(currentZone.terrainType, unit.Category()) {
+                if neighbor.Side() != unit.Side() || !isTerrainValidForUnit(neighbor.terrainType, unit.Category()) {
                     continue
                 }
 

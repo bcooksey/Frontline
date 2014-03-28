@@ -41,6 +41,11 @@ func TestMove(t *testing.T) {
     if Move(zone1, zone4, unit) != true {
         t.Error("Could not successfully move a unit from one zone to another")
     }
+
+    unit.movementRange = 2
+    if Move(zone1, zone4, unit) != true {
+        t.Error("Could not successfully move a unit to a zone in range")
+    }
 }
 
 func TestMoveZoneBeyondUnitMovementRange(t *testing.T) {
@@ -71,13 +76,12 @@ func TestMoveLandUnitOnlyGoesOverLand(t *testing.T) {
         t.Error("Land unit moved across sea")
     }
 
-    zone2.terrainType = "impassible"
-    if Move(zone1, zone3, unit) != false {
-        t.Error("Land unit moved across impassible area")
+    if Move(zone1, zone2, unit) != false {
+        t.Error("Land unit stopped in the sea")
     }
 }
 
-func TestMoveSeaUnit(t *testing.T) {
+func TestMoveSeaUnitOnlyGoesOverSea(t *testing.T) {
     zone1 := Zone{id: 1, terrainType: "sea"}
     zone2 := Zone{id: 2, terrainType: "sea"}
     zone3 := Zone{id: 3, terrainType: "sea", neighboringZones: []*Zone{&zone2}}
@@ -94,9 +98,13 @@ func TestMoveSeaUnit(t *testing.T) {
     if Move(zone1, zone3, unit) != false {
         t.Error("Sea unit moved across land")
     }
+
+    if Move(zone1, zone2, unit) != false {
+        t.Error("Sea unit stopped on land")
+    }
 }
 
-func TestMoveAirUnit(t *testing.T) {
+func TestMoveAirUnitGoesOverAnything(t *testing.T) {
     zone1 := Zone{id: 1, terrainType: "land"}
     zone2 := Zone{id: 2, terrainType: "land"}
     zone3 := Zone{id: 3, terrainType: "land", neighboringZones: []*Zone{&zone2}}
@@ -113,6 +121,8 @@ func TestMoveAirUnit(t *testing.T) {
     if Move(zone1, zone3, unit) != true {
         t.Error("Air unit could not move across sea")
     }
+
+    // Case: Air unit cannot stop in sea
 }
 
 func TestMoveImpassibleLandIsImpassible(t *testing.T) {
@@ -125,7 +135,7 @@ func TestMoveImpassibleLandIsImpassible(t *testing.T) {
     unit := Unit{movementRange: 20, category: "land"}
 
     if Move(zone1, zone3, unit) != false {
-        t.Error("Land united moved across impassible terrain")
+        t.Error("Land unit moved across impassible terrain")
     }
 
     unit.category = "sea"
@@ -137,4 +147,32 @@ func TestMoveImpassibleLandIsImpassible(t *testing.T) {
     if Move(zone1, zone3, unit) != false {
         t.Error("Air unit moved across impassible terrain")
     }
+}
+
+func TestMoveUnitCanMoveThroughFriendlyZone(t *testing.T) {
+    zone1 := Zone{id: 1, terrainType: "land", controllingPower: "us"}
+    zone2 := Zone{id: 2, terrainType: "land", controllingPower: "uk"}
+    zone3 := Zone{id: 3, terrainType: "land", controllingPower: "us", neighboringZones: []*Zone{&zone2}}
+    zone1.neighboringZones = []*Zone{&zone2}
+    zone2.neighboringZones = []*Zone{&zone1, &zone3}
+
+    unit := Unit{movementRange: 20, category: "land", controllingPower: "us"}
+
+    if Move(zone1, zone3, unit) != true {
+        t.Error("Could not move unit through friendly zone")
+    }
+
+    if Move(zone1, zone2, unit) != true {
+        t.Error("Could not stop unit in friendly zone")
+    }
+
+    zone2.controllingPower = "japan"
+    if Move(zone1, zone3, unit) != false {
+        t.Error("Unit moved through hostile zone")
+    }
+
+    if Move(zone1, zone2, unit) != false {
+        t.Error("Unit stopped in hostile zone")
+    }
+
 }
