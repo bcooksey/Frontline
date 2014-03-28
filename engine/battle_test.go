@@ -58,8 +58,8 @@ func TestBattleDefending(t *testing.T) {
 
 func TestBattleWoundDefenders(t *testing.T) {
     defenders := make([]Defender, 2)
-    defenders[0] = &Unit{category: "land"}
-    defenders[1] = &Unit{category: "land"}
+    defenders[0] = &LandUnit{}
+    defenders[1] = &LandUnit{}
 
     battle := CreateBattle(nil, defenders, nil)
 
@@ -72,8 +72,8 @@ func TestBattleWoundDefenders(t *testing.T) {
     }
 
     defenders = make([]Defender, 2)
-    defenders[0] = &Unit{category: "land"}
-    defenders[1] = &Unit{category: "land"}
+    defenders[0] = &LandUnit{}
+    defenders[1] = &LandUnit{}
 
     battle = CreateBattle(nil, defenders, nil)
     casualties["land"] = 1
@@ -93,8 +93,8 @@ func TestBattleWoundDefenders(t *testing.T) {
 
 func TestBattleWoundAttackers(t *testing.T) {
     attackers := make([]Attacker, 2)
-    attackers[0] = &Unit{category: "land"}
-    attackers[1] = &Unit{category: "land"}
+    attackers[0] = &LandUnit{}
+    attackers[1] = &LandUnit{}
 
     battle := CreateBattle(attackers, nil, nil)
 
@@ -107,8 +107,8 @@ func TestBattleWoundAttackers(t *testing.T) {
     }
 
     attackers = make([]Attacker, 2)
-    attackers[0] = &Unit{category: "land"}
-    attackers[1] = &Unit{category: "land"}
+    attackers[0] = &LandUnit{}
+    attackers[1] = &LandUnit{}
 
     battle = CreateBattle(attackers, nil, nil)
     casualties["land"] = 1
@@ -128,11 +128,11 @@ func TestBattleWoundAttackers(t *testing.T) {
 
 func TestBattleRemoveCasualties(t *testing.T) {
     attackers := make([]Attacker, 2)
-    attackers[0] = &Unit{category: "land", wounded: true}
-    attackers[1] = &Unit{category: "land"}
+    attackers[0] = &LandUnit{Unit{wounded: true}}
+    attackers[1] = &LandUnit{}
 
     defenders := make([]Defender, 1)
-    defenders[0] = &Unit{category: "land", wounded: true}
+    defenders[0] = &LandUnit{Unit{wounded: true}}
 
     battle := CreateBattle(attackers, defenders, nil)
 

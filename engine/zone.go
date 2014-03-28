@@ -52,7 +52,14 @@ func (q *ZoneQueue) Pop() interface{} {
     return z
 }
 
-func Move(fromZone Zone, toZone Zone, unit Unit) bool {
+type Moveable interface {
+    MovementRange() int
+    Side() string
+    IsTerrainValid(string) bool
+    CanStopInZone(*Zone) bool
+}
+
+func Move(fromZone Zone, toZone Zone, unit Moveable) bool {
     if fromZone.id == toZone.id {
         return true
     }
@@ -75,12 +82,12 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
         currentZone := queue.Pop().(Zone)
         for _, neighbor := range currentZone.NeighboringZones() {
             if !visits[neighbor.id] {
-                if neighbor.Side() != unit.Side() || !isTerrainValidForUnit(neighbor.terrainType, unit.Category()) {
+                if neighbor.Side() != unit.Side() || !unit.IsTerrainValid(neighbor.terrainType) {
                     continue
                 }
 
                 if neighbor.id == toZone.id {
-                    if canUnitStopInZone(unit, neighbor) {
+                    if unit.CanStopInZone(neighbor) {
                         return true
                     } else {
                         return false
@@ -94,27 +101,4 @@ func Move(fromZone Zone, toZone Zone, unit Unit) bool {
         movesLeft--
     }
     return false
-}
-
-func isTerrainValidForUnit(terrainType string, unitCategory string) bool {
-    if unitCategory == "land" && terrainType == "land" {
-        return true
-    } else if unitCategory == "sea" && terrainType == "sea" {
-        return true
-    } else if unitCategory == "air" && terrainType != "impassible" {
-        return true
-    } else {
-        return false
-    }
-}
-
-func canUnitStopInZone(u Unit, z *Zone) bool {
-    if u.Category() == "air" {
-        if z.terrainType == "sea" {
-            return false
-        } else {
-            return true
-        }
-    }
-    return true
 }
