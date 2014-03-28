@@ -16,4 +16,3 @@ func (u LandUnit) CanStopInZone(z *Zone) bool {
 }
 
 func (u LandUnit) Category() string { return "land" }
-

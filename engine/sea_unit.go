@@ -16,4 +16,3 @@ func (u SeaUnit) CanStopInZone(z *Zone) bool {
 }
 
 func (u SeaUnit) Category() string { return "sea" }
-
