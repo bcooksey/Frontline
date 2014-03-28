@@ -56,7 +56,7 @@ type Moveable interface {
     MovementRange() int
     Side() string
     IsTerrainValid(string) bool
-    CanStopInZone(*Zone) bool
+    CanStopInZone(Zone) bool
 }
 
 func Move(fromZone Zone, toZone Zone, unit Moveable) bool {
@@ -87,7 +87,7 @@ func Move(fromZone Zone, toZone Zone, unit Moveable) bool {
                 }
 
                 if neighbor.id == toZone.id {
-                    if unit.CanStopInZone(neighbor) {
+                    if unit.CanStopInZone(*neighbor) {
                         return true
                     } else {
                         return false

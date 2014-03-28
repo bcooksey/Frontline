@@ -11,7 +11,7 @@ func (u AirUnit) IsTerrainValid(terrain string) bool {
     return true
 }
 
-func (u AirUnit) CanStopInZone(z *Zone) bool {
+func (u AirUnit) CanStopInZone(z Zone) bool {
     if z.TerrainType() == "sea" {
         return false
     }
