@@ -9,11 +9,11 @@ type Unit struct {
     controllingPower string
 }
 
-func (u *Unit) Attack(roll int) bool {
+func (u Unit) Attack(roll int) bool {
     return roll <= u.attackRating
 }
 
-func (u *Unit) Defend(roll int) bool {
+func (u Unit) Defend(roll int) bool {
     return roll <= u.defenseRating
 }
 
@@ -22,11 +22,11 @@ func (u *Unit) Wound() bool {
     return true
 }
 
-func (u *Unit) Wounded() bool { return u.wounded }
+func (u Unit) Wounded() bool { return u.wounded }
 
 func (u Unit) MovementRange() int { return u.movementRange }
 
-func (u *Unit) ControllingPower() string { return u.controllingPower }
+func (u Unit) ControllingPower() string { return u.controllingPower }
 
 func (u Unit) Side() string {
     return SidesMap[u.controllingPower]

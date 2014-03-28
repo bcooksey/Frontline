@@ -69,11 +69,11 @@ func CreateBattle(attackers []Attacker, defenders []Defender, dice Roller) Battl
 }
 
 // Getters
-func (b *Battle) Phase() string         { return b.phase }
-func (b *Battle) Attackers() []Attacker { return b.attackers }
-func (b *Battle) Defenders() []Defender { return b.defenders }
+func (b Battle) Phase() string         { return b.phase }
+func (b Battle) Attackers() []Attacker { return b.attackers }
+func (b Battle) Defenders() []Defender { return b.defenders }
 
-func (b *Battle) RollForAttackers() map[string]int {
+func (b Battle) RollForAttackers() map[string]int {
     hits := map[string]int{"land": 0, "sea": 0, "air": 0}
     for _, attacker := range b.attackers {
         if attacker.Attack(b.dice.Roll()) {
@@ -83,7 +83,7 @@ func (b *Battle) RollForAttackers() map[string]int {
     return hits
 }
 
-func (b *Battle) RollForDefenders() map[string]int {
+func (b Battle) RollForDefenders() map[string]int {
     hits := map[string]int{"land": 0, "sea": 0, "air": 0}
     for _, defender := range b.defenders {
         if defender.Defend(b.dice.Roll()) {
