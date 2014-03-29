@@ -12,7 +12,7 @@ import (
 
 var (
     tmplMain        = "main.html"
-    templateNames   = [...]string{tmplMain, "footer.html"}
+    templateNames   = [...]string{tmplMain, "scripts.html", "footer.html"}
     templatePaths   []string
     templates       *template.Template
     reloadTemplates = true
@@ -32,6 +32,8 @@ func main() {
 
     r := mux.NewRouter()
     r.HandleFunc("/", handleIndex)
+	http.HandleFunc("/static/js/", handleStaticJs)
+	http.HandleFunc("/static/img/", handleStaticImg)
     http.Handle("/", r)
     log.Fatal(http.ListenAndServe(":8082", nil))
 }

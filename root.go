@@ -7,7 +7,6 @@ import (
 func handleIndex(w http.ResponseWriter, r *http.Request) {
     model := struct{}{}
     ExecTemplate(w, tmplMain, model)
-    // fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
