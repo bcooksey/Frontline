@@ -2,9 +2,12 @@ package main
 
 import (
     "bytes"
+    "encoding/json"
     "flag"
     "github.com/gorilla/mux"
+    "github.com/gorilla/securecookie"
     "html/template"
+    "io/ioutil"
     "log"
     "net/http"
     "path/filepath"
@@ -18,6 +21,16 @@ var (
     reloadTemplates = true
     logger          *ServerLogger
     inProduction    = flag.Bool("production", false, "are we running in production")
+    configPath      = flag.String("config", "config.json", "Path to configuration file")
+    secureCookie    *securecookie.SecureCookie
+
+    config = struct {
+        Dbuser string
+        Dbpass string
+    }{
+        "",
+        "",
+    }
 )
 
 func main() {
@@ -31,9 +44,17 @@ func main() {
     logger.Noticef("Starting Frontline Server...\n")
 
     r := mux.NewRouter()
+
+    if err := readConfig(*configPath); err != nil {
+        log.Fatalf("Failed reading config file %s. %s\n", *configPath, err.Error())
+    }
+
+    // Root View
     r.HandleFunc("/", handleIndex)
-	http.HandleFunc("/static/js/", handleStaticJs)
-	http.HandleFunc("/static/img/", handleStaticImg)
+    r.HandleFunc("/login", handleLogin)
+    http.HandleFunc("/static/js/", handleStaticJs)
+    http.HandleFunc("/static/img/", handleStaticImg)
+
     http.Handle("/", r)
     log.Fatal(http.ListenAndServe(":8082", nil))
 }
@@ -61,4 +82,20 @@ func ExecTemplate(w http.ResponseWriter, templateName string, model interface{})
         w.Write(buf.Bytes())
     }
     return true
+}
+
+func serveErrorMsg(w http.ResponseWriter, msg string) {
+    http.Error(w, msg, http.StatusBadRequest)
+}
+
+func readConfig(configFile string) error {
+    b, err := ioutil.ReadFile(configFile)
+    if err != nil {
+        return err
+    }
+    err = json.Unmarshal(b, &config)
+    if err != nil {
+        return err
+    }
+    return nil
 }
