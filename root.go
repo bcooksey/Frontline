@@ -4,6 +4,7 @@ import (
     "database/sql"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
+    "github.com/gorilla/securecookie"
     _ "log"
     "net/http"
 )
@@ -27,40 +28,28 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
     }
 
     var id int
-    err = db.QueryRow("SELECT id FROM users WHERE email = ?", r.FormValue("email")).Scan(&id)
+    var username string
+    err = db.QueryRow("SELECT id, name FROM users WHERE email = ?", r.FormValue("email")).Scan(&id, &username)
 
     switch {
     case err == sql.ErrNoRows:
         logger.Error("No user with that ID.")
         serveErrorMsg(w, "Could not login")
+        return
     case err != nil:
         logger.Errorf("%v", err)
         serveErrorMsg(w, "Could not login")
+        return
     default:
-        logger.Noticef("Username is %d\n", id)
+        logger.Noticef("User %d logged in", id)
     }
 
-    // TODO: Generate random session token and store in session (everyone else will need to check session token)
+    session, _ := sessionStore.Get(r, fmt.Sprintf("user-%d", id))
+    session.Values["token"] = securecookie.GenerateRandomKey(256)
+    session.Values["userId"] = id
+    session.Values["userName"] = username
 
-    // cb := "http://" + r.Host + "/" + "?" + q
-    // logger.Noticef("handleLogin: cb=%s\n", cb)
-
-    // cookie := &SecureCookieValue{TwitterTemp: tempCred.Secret}
-    // setSecureCookie(w, cookie)
-    // http.Redirect(w, r, oauthClient.AuthorizationURL(tempCred, nil), 302)
-}
-
-func handleLogout(w http.ResponseWriter, r *http.Request) {
-    //deleteSecureCookie(w)
-    //http.Redirect(w, r, redirect, 302)
-}
-
-func deleteSecureCookie(w http.ResponseWriter) {
-	cookie := &http.Cookie{
-		Name:   cookieName,
-		Value:  "deleted",
-		MaxAge: WeekInSeconds,
-		Path:   "/",
-	}
-	http.SetCookie(w, cookie)
+    session.Save(r, w)
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(fmt.Sprintf(`{"user": {"id": %d, "name": "%s"}}`, id, username)))
 }

@@ -5,7 +5,7 @@ import (
     "encoding/json"
     "flag"
     "github.com/gorilla/mux"
-    "github.com/gorilla/securecookie"
+    "github.com/gorilla/sessions"
     "html/template"
     "io/ioutil"
     "log"
@@ -15,19 +15,22 @@ import (
 
 var (
     tmplMain        = "main.html"
-    templateNames   = [...]string{tmplMain, "scripts.html", "footer.html"}
+    templateNames   = [...]string{tmplMain, "header.html", "scripts.html", "footer.html"}
     templatePaths   []string
     templates       *template.Template
     reloadTemplates = true
     logger          *ServerLogger
     inProduction    = flag.Bool("production", false, "are we running in production")
     configPath      = flag.String("config", "config.json", "Path to configuration file")
-    secureCookie    *securecookie.SecureCookie
+    sessionStore    *sessions.CookieStore
+
 
     config = struct {
         Dbuser string
         Dbpass string
+        sessionSecretKey string
     }{
+        "",
         "",
         "",
     }
@@ -48,6 +51,8 @@ func main() {
     if err := readConfig(*configPath); err != nil {
         log.Fatalf("Failed reading config file %s. %s\n", *configPath, err.Error())
     }
+
+    sessionStore = sessions.NewCookieStore([]byte(config.sessionSecretKey))
 
     // Root View
     r.HandleFunc("/", handleIndex)
