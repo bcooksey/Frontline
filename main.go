@@ -10,12 +10,10 @@ import (
     "io/ioutil"
     "log"
     "net/http"
-    "path/filepath"
 )
 
 var (
     tmplMain        = "main.html"
-    templateNames   = [...]string{tmplMain, "header.html", "scripts.html", "footer.html"}
     templatePaths   []string
     templates       *template.Template
     reloadTemplates = true
@@ -24,10 +22,9 @@ var (
     configPath      = flag.String("config", "config.json", "Path to configuration file")
     sessionStore    *sessions.CookieStore
 
-
     config = struct {
-        Dbuser string
-        Dbpass string
+        Dbuser           string
+        Dbpass           string
         sessionSecretKey string
     }{
         "",
@@ -66,12 +63,7 @@ func main() {
 
 func GetTemplates() *template.Template {
     if reloadTemplates || (nil == templates) {
-        if 0 == len(templatePaths) {
-            for _, name := range templateNames {
-                templatePaths = append(templatePaths, filepath.Join("tmpl", name))
-            }
-        }
-        templates = template.Must(template.ParseFiles(templatePaths...))
+        templates = template.Must(template.ParseGlob("tmpl/*"))
     }
     return templates
 }
