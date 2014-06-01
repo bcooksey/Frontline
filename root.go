@@ -5,16 +5,19 @@ import (
     "fmt"
     _ "github.com/go-sql-driver/mysql"
     "github.com/gorilla/securecookie"
-    _ "log"
     "net/http"
 )
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-    model := struct{}{}
-    ExecTemplate(w, tmplMain, model)
+    ExecTemplate(w, tmplMain)
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
+    if r.Method == "GET" {
+        ExecTemplate(w, "login.html")
+        return
+    }
+
     db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/frontline", config.Dbuser, config.Dbpass))
     if err != nil {
         logger.Error(err.Error())

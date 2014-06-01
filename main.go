@@ -68,9 +68,14 @@ func GetTemplates() *template.Template {
     return templates
 }
 
-func ExecTemplate(w http.ResponseWriter, templateName string, model interface{}) bool {
+func ExecTemplate(w http.ResponseWriter, templateName string) bool {
+    data := struct{}{}
+    return ExecTemplateWithContext(w, templateName, data)
+}
+
+func ExecTemplateWithContext(w http.ResponseWriter, templateName string, data interface{}) bool {
     var buf bytes.Buffer
-    if err := GetTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
+    if err := GetTemplates().ExecuteTemplate(&buf, templateName, data); err != nil {
         logger.Errorf("Failed to execute template '%s', error: %s", templateName, err.Error())
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return false
