@@ -1,6 +1,5 @@
 // _.templateSettings.variable = "";
 
-$(document).ready({
-
+$(document).ready(function() {
 
 });
