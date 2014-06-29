@@ -15,8 +15,8 @@ func serveFileFromDir(w http.ResponseWriter, r *http.Request, dir, fileName stri
 }
 
 func handleStaticJs(w http.ResponseWriter, r *http.Request) {
-    file := r.URL.Path[len("/static/js/"):]
-    serveFileFromDir(w, r, "static/js", file)
+    file := r.URL.Path[len("/static/compiled/js/"):]
+    serveFileFromDir(w, r, "static/compiled/js", file)
 }
 
 func handleStaticImg(w http.ResponseWriter, r *http.Request) {

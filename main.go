@@ -54,7 +54,7 @@ func main() {
     // Root View
     r.HandleFunc("/", handleIndex)
     r.HandleFunc("/login", handleLogin)
-    http.HandleFunc("/static/js/", handleStaticJs)
+    http.HandleFunc("/static/compiled/js/", handleStaticJs)
     http.HandleFunc("/static/img/", handleStaticImg)
 
     http.Handle("/", r)
