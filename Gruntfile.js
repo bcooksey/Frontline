@@ -10,14 +10,10 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
-        // files: [{
-        //   expand: true,
-        //   cwd: 'static/js/src',
-        //   src: '**/*.js',
-        //   dest: 'static/compiled/js/'
-        // }]
-        src: 'static/js/src/app.js',
-        dest: 'static/compiled/js/build.js'
+        files: {
+          'static/compiled/js/build.js': ['static/js/src/*.js'],
+          'static/compiled/js/libs.js': ['static/js/libs/jquery-1.11.0.min.js', 'static/js/libs/underscore-min.js', 'static/js/libs/*.js']
+        }
       }
     }
   });
