@@ -53,6 +53,10 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
     session.Values["userName"] = username
 
     session.Save(r, w)
-    w.Header().Set("Content-Type", "application/json")
-    w.Write([]byte(fmt.Sprintf(`{"user": {"id": %d, "name": "%s"}}`, id, username)))
+    http.Redirect(w, r, "/app", 301)
+}
+
+func handleApp(w http.ResponseWriter, r *http.Request) {
+    ExecTemplate(w, "app.html")
+    return
 }
