@@ -17,3 +17,7 @@ func (d *Dice) Roll() int {
     }
     return roll
 }
+
+type Roller interface {
+    Roll() int
+}

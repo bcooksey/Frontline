@@ -1,9 +1,10 @@
 package engine
 
 import "testing"
-import "fmt"
 
-var _ = fmt.Println // TODO: Delete
+type MockDice struct{}
+
+func (m *MockDice) Roll() int { return 1 }
 
 /****** Research Phase ******/
 
@@ -15,13 +16,16 @@ func TestBuyAttempts(t *testing.T) {
     }
 
     if phase.CurrentStep() != 2 {
-        t.Error("Research Phase - Did not advance from step 1 to 2")
+        t.Error("Research Phase - Did not advance to next step")
+    }
+
+    if phase.BuyAttempts(1, 5) != false {
+        t.Error("Research Phase - Bought attempts during an incorrect step")
     }
 }
 
 func TestBuyAttemptsFailsWhenSuppliesTooLow(t *testing.T) {
     phase := ResearchPhase{Phase{step: 1}}
-    // turn := Turn{}
 
     if phase.BuyAttempts(2, 5) != false {
         t.Error("Research Phase - Bought attempts player could not afford")
@@ -29,5 +33,18 @@ func TestBuyAttemptsFailsWhenSuppliesTooLow(t *testing.T) {
 
     if phase.CurrentStep() != 1 {
         t.Error("Research Phase - Wrongly advanced to next step when purchase failed")
+    }
+}
+
+func TestAttemptResearch(t *testing.T) {
+    phase := ResearchPhase{Phase{step: 2}}
+    dice := &MockDice{}
+
+    if phase.AttemptResearch(1, dice) != true {
+        t.Error("Research Phase - Couldn't attempt research during first step")
+    }
+
+    if phase.CurrentStep() != 3 {
+        t.Error("Research Phase - Did not advance to next step")
     }
 }

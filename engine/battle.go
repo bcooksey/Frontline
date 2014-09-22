@@ -29,10 +29,6 @@ import "fmt"
    Units being able to take multiple hits
 */
 
-type Roller interface {
-    Roll() int
-}
-
 type Soldier interface {
     Wound() bool
     Wounded() bool
