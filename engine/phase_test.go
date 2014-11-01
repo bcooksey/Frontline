@@ -12,15 +12,19 @@ func (m *MockDice) Roll() int { return 1 }
 
 func TestBuyAttempts(t *testing.T) {
     phase := ResearchPhase{}
-    state := &ResearchNoAttemptsState{Phase: &phase}
-    phase.SetState(state)
+    phase.Init()
 
     if phase.BuyAttempts(1, 5) != true {
         t.Error("Research Phase - Couldn't buy attempts during first step")
     }
 
-    if phase.CurrentState().(*ResearchAttemptsBoughtState).GetNumberOfAttempts() != 1 {
+    gotState, ok := phase.GetState().(*ResearchAttemptsBoughtState)
+    if ok != true {
         t.Error("Research Phase - Did not advance to next step")
+    }
+
+    if gotState.GetNumberOfAttempts() != 1 {
+        t.Error("Research Phase - Bought Attempts are not recorded")
     }
 
     if phase.BuyAttempts(1, 5) != false {
@@ -30,14 +34,13 @@ func TestBuyAttempts(t *testing.T) {
 
 func TestBuyAttemptsFailsWhenSuppliesTooLow(t *testing.T) {
     phase := ResearchPhase{}
-    state := &ResearchNoAttemptsState{Phase: &phase}
-    phase.SetState(state)
+    phase.Init()
 
     if phase.BuyAttempts(2, 5) != false {
         t.Error("Research Phase - Bought attempts player could not afford")
     }
 
-    _, ok := phase.CurrentState().(*ResearchNoAttemptsState)
+    _, ok := phase.GetState().(*ResearchNoAttemptsState)
     if ok != true {
         t.Error("Research Phase - Wrongly advanced to next step when purchase failed")
     }
@@ -51,7 +54,7 @@ func TestBuyAttemptsFailsWhenSuppliesTooLow(t *testing.T) {
 //         t.Error("Research Phase - Couldn't attempt research during first step")
 //     }
 // 
-//     if phase.CurrentStep() != 3 {
+//     if phase.GetStep() != 3 {
 //         t.Error("Research Phase - Did not advance to next step")
 //     }
 // }

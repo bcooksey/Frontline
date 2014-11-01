@@ -1,7 +1,6 @@
 package engine
 
 // TODO: Need to decide on interface for a phase. maybe:
-//   CurrentStep
 //   UpdateTurnFromPhase (for applying new research, purchased units, etc.)
 //   NextPhase() - Returns next phase so easy to continue driving through states
 
@@ -10,18 +9,11 @@ var _ = fmt.Println // TOOD: DELETE
 
 type ResearchPhase struct {
     state ResearchState
-    // noAttemptsState ResearchNoAttemptsState
-    // attemptsBoughtState ResearchAttemptsBoughtState
-    // successState ResearchSuccessState
 }
 
-// func (phase *ResearchPhase) Init() {
-//    phase.noAttemptsState = &ResearchNoAttemptsState{Phase: *phase}
-//    phase.attemptsBoughtState = &ResearchAttemptsBoughtState{Phase: *phase}
-//    phase.successState = &ResearchSuccessState{Phase: *phase}
-// 
-//    phase.state = phase.noAttemptsState
-// }
+func (phase *ResearchPhase) Init() {
+   phase.state = &ResearchNoAttemptsState{Phase: phase}
+}
 
 func (phase *ResearchPhase) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
    return phase.state.BuyAttempts(numberOfAttempts, availableSupplies)
@@ -35,7 +27,7 @@ func (phase *ResearchPhase) AwardSuccesses() bool {
    return phase.state.AwardSuccesses()
 }
 
-func (phase ResearchPhase) CurrentState() ResearchState {
+func (phase ResearchPhase) GetState() ResearchState {
    return phase.state
 }
 
@@ -55,7 +47,7 @@ type ResearchNoAttemptsState struct {
 
 func (state *ResearchNoAttemptsState) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
    if numberOfAttempts * 5 <= availableSupplies {
-      state.Phase.SetState(&ResearchAttemptsBoughtState{Phase: *state.Phase, numberOfAttempts: numberOfAttempts})
+      state.Phase.SetState(&ResearchAttemptsBoughtState{Phase: state.Phase, numberOfAttempts: numberOfAttempts})
       return true
    }
    return false
@@ -70,19 +62,19 @@ func (state *ResearchNoAttemptsState) AwardSuccesses() bool {
 }
 
 type ResearchAttemptsBoughtState struct {
-   Phase ResearchPhase
+   Phase *ResearchPhase
    numberOfAttempts int
 }
 
-func (state ResearchAttemptsBoughtState) GetNumberOfAttempts() int {
+func (state *ResearchAttemptsBoughtState) GetNumberOfAttempts() int {
    return state.numberOfAttempts
 }
 
-func (state ResearchAttemptsBoughtState) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
+func (state *ResearchAttemptsBoughtState) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
    return false
 }
 
-func (state ResearchAttemptsBoughtState) AttemptResearch(numberOfAttempts int, dice Roller) bool {
+func (state *ResearchAttemptsBoughtState) AttemptResearch(numberOfAttempts int, dice Roller) bool {
    if numberOfAttempts > 0 {
       // state.Phase.State = ResearchAttemptsBoughtState{Phase: state.Phase}
       // TODO: Implement this:
@@ -94,7 +86,7 @@ func (state ResearchAttemptsBoughtState) AttemptResearch(numberOfAttempts int, d
    return false
 }
 
-func (state ResearchAttemptsBoughtState) AwardSuccesses() bool {
+func (state *ResearchAttemptsBoughtState) AwardSuccesses() bool {
    return false
 }
 
@@ -102,14 +94,14 @@ type ResearchSuccessState struct {
    Phase ResearchPhase
 }
 
-func (state ResearchSuccessState) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
+func (state *ResearchSuccessState) BuyAttempts(numberOfAttempts int, availableSupplies int) bool {
    return false
 }
 
-func (state ResearchSuccessState) AttemptResearch(numberOfAttempts int, dice Roller) bool {
+func (state *ResearchSuccessState) AttemptResearch(numberOfAttempts int, dice Roller) bool {
    return false
 }
 
-func (state ResearchSuccessState) AwardSuccesses() bool {
+func (state *ResearchSuccessState) AwardSuccesses() bool {
    return true
 }
