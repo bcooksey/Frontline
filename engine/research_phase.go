@@ -1,5 +1,10 @@
 package engine
 
+import (
+    "errors"
+    "fmt"
+)
+
 type ResearchPhase struct {
     state ResearchState
 }
@@ -16,7 +21,7 @@ func (phase *ResearchPhase) BuyAttempts(numberOfAttempts int, availableSupplies 
     return phase.state.BuyAttempts(numberOfAttempts, availableSupplies)
 }
 
-func (phase *ResearchPhase) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) bool {
+func (phase *ResearchPhase) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) (bool, error) {
     return phase.state.AttemptResearch(numberOfAttempts, targetCategory, dice)
 }
 
@@ -30,7 +35,7 @@ func (phase *ResearchPhase) SetState(state ResearchState) {
 
 type ResearchState interface {
     BuyAttempts(int, int) bool
-    AttemptResearch(int, int, Roller) bool
+    AttemptResearch(int, int, Roller) (bool, error)
 }
 
 type ResearchNoAttemptsState struct {
@@ -45,8 +50,8 @@ func (state *ResearchNoAttemptsState) BuyAttempts(numberOfAttempts int, availabl
     return false
 }
 
-func (state *ResearchNoAttemptsState) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) bool {
-    return false
+func (state *ResearchNoAttemptsState) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) (bool, error) {
+    return false, errors.New("Research: Must purchase attempts before researching")
 }
 
 type ResearchAttemptsBoughtState struct {
@@ -57,16 +62,20 @@ func (state *ResearchAttemptsBoughtState) BuyAttempts(numberOfAttempts int, avai
     return false
 }
 
-func (state *ResearchAttemptsBoughtState) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) bool {
+func (state *ResearchAttemptsBoughtState) AttemptResearch(numberOfAttempts int, targetCategory int, dice Roller) (bool, error) {
     if numberOfAttempts > 0 {
+        if targetCategory < 1 || targetCategory > 6 {
+            return false, fmt.Errorf("Research: Cannot research category %d", targetCategory)
+        }
+
         for i := 0; i < numberOfAttempts; i++ {
             roll := dice.Roll()
             if roll == targetCategory {
                 state.Phase.SetState(&ResearchNoAttemptsState{Phase: state.Phase})
-                return true
+                return true, nil
             }
         }
     }
     state.Phase.SetState(&ResearchNoAttemptsState{Phase: state.Phase})
-    return false
+    return false, nil
 }
