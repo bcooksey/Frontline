@@ -1,13 +1,5 @@
 package engine
 
-// TODO: Need to decide on interface for a phase. maybe:
-//   UpdateTurnFromPhase (for applying new research, purchased units, etc.)
-//   NextPhase() - Returns next phase so easy to continue driving through states
-
-import "fmt"
-
-var _ = fmt.Println // TOOD: DELETE
-
 type ResearchPhase struct {
     state ResearchState
 }
