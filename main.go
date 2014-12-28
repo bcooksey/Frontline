@@ -4,6 +4,7 @@ import (
     "bytes"
     "encoding/json"
     "flag"
+    "github.com/bcooksey/frontline/api"
     "github.com/gorilla/mux"
     "github.com/gorilla/sessions"
     "html/template"
@@ -51,12 +52,14 @@ func main() {
 
     sessionStore = sessions.NewCookieStore([]byte(config.sessionSecretKey))
 
-    // Root View
+    // Root Views
     r.HandleFunc("/", handleIndex)
     r.HandleFunc("/login", handleLogin)
     r.HandleFunc("/app", handleApp)
     http.HandleFunc("/static/compiled/js/", handleStaticJs)
     http.HandleFunc("/static/img/", handleStaticImg)
+
+    api.RegisterRoutes(r)
 
     http.Handle("/", r)
     log.Fatal(http.ListenAndServe(":8082", nil))
