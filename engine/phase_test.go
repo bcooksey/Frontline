@@ -2,6 +2,7 @@ package engine
 
 import "testing"
 import "fmt"
+
 var _ = fmt.Println // TOOD: DELETE
 
 type MockDice struct{}
